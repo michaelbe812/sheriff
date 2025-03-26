@@ -9,6 +9,8 @@ export type ProjectEntry<TEntry> = {
   entry: TEntry;
 };
 
+export const DEFAULT_PROJECT_NAME = 'default';
+
 
 
 export function getEntryFromCliOrConfig<R extends boolean = true>(
@@ -51,11 +53,11 @@ function processEntryFile(
     return runInit
       ? [
           {
-            projectName: 'default',
+            projectName: DEFAULT_PROJECT_NAME,
             entry: init(toFsPath(fs.join(fs.cwd(), entryFileValue))),
           },
         ]
-      : [{ projectName: 'default', entry: entryFileValue }];
+      : [{ projectName: DEFAULT_PROJECT_NAME, entry: entryFileValue }];
   } else {
     const entries = Object.entries(entryFileValue);
 

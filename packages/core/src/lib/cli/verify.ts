@@ -3,7 +3,7 @@ import { traverseFileInfo } from '../modules/traverse-file-info';
 import { checkForDependencyRuleViolation, DependencyRuleViolation } from '../checks/check-for-dependency-rule-violation';
 import getFs from '../fs/getFs';
 import { cli } from './cli';
-import { getEntryFromCliOrConfig } from './internal/get-entry-from-cli-or-config';
+import { DEFAULT_PROJECT_NAME, getEntryFromCliOrConfig } from './internal/get-entry-from-cli-or-config';
 import { logInfoForMissingSheriffConfig } from './internal/log-info-for-missing-sheriff-config';
 
 type ValidationsMap = Record<
@@ -46,7 +46,7 @@ export function verify(args: string[]) {
       dependencyRuleViolations: [],
     };
 
-    
+
     projectValidations.set(projectName, validation);
 
     for (const { fileInfo } of traverseFileInfo(project.entry.fileInfo)) {
@@ -90,7 +90,7 @@ export function verify(args: string[]) {
   // Process each project's validation results
   for (const [projectName, validation] of projectValidations.entries()) {
     cli.log('');
-    if (projectName !== 'default') {
+    if (projectName !== DEFAULT_PROJECT_NAME) {
       cli.log(cli.bold(`Project: ${projectName}`));
       cli.log('');
     }
