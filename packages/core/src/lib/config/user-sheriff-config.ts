@@ -235,5 +235,11 @@ export interface UserSheriffConfig {
   /**
    * The file or files that the CLI should use by default.
    */
-  entryFile?: string | Record<string, string>;
+  entryFile?: string;
+
+  /**
+   * The entry points that the CLI should use by default.
+   * This is relevant for a multi-project setup.
+   */
+  entryPoints?: Record<string, string>;
 }
