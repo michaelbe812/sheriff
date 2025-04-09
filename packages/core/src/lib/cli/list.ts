@@ -7,14 +7,14 @@ import { cli } from './cli';
 import { logInfoForMissingSheriffConfig } from './internal/log-info-for-missing-sheriff-config';
 
 export function list(args: string[]) {
-  const projectInfo = getEntryFromCliOrConfig(args[0]);
-  if (projectInfo.length > 0) {
-    logInfoForMissingSheriffConfig(projectInfo[0].entry);
+  const projectEntries = getEntryFromCliOrConfig(args[0]);
+  if (projectEntries.length > 0) {
+    logInfoForMissingSheriffConfig(projectEntries[0].entry);
   }
 
-  projectInfo.forEach((projectInfo) => {
+  projectEntries.forEach((projectEntry) => {
     // root doesn't count
-    const modulesCount = projectInfo.entry.modules.length - 1;
+    const modulesCount = projectEntry.entry.modules.length - 1;
 
     cli.log(`This project contains ${modulesCount} modules:`);
     cli.log('');
@@ -22,11 +22,11 @@ export function list(args: string[]) {
     cli.log('. (root)');
     const directory = mapModulesToDirectory(
       Array.from(
-        projectInfo.entry.modules
+        projectEntry.entry.modules
           .filter((module) => !module.isRoot)
           .map((module) => toFsPath(module.path)),
       ),
-      projectInfo.entry,
+      projectEntry.entry,
     );
     printDirectory(directory);
   });

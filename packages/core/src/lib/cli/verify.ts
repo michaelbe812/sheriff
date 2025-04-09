@@ -23,8 +23,8 @@ type ProjectValidation = {
 
 export function verify(args: string[]) {
   const fs = getFs();
-  const projectInfo = getEntryFromCliOrConfig(args[0]);
-  logInfoForMissingSheriffConfig(projectInfo[0].entry);
+  const projectEntries = getEntryFromCliOrConfig(args[0]);
+  logInfoForMissingSheriffConfig(projectEntries[0].entry);
 
   // Keep track of overall status to determine final process exit code
   let hasAnyProjectError = false;
@@ -32,8 +32,8 @@ export function verify(args: string[]) {
   // Store validation results for each project
   const projectValidations = new Map<string, ProjectValidation>();
 
-  for (const project of projectInfo) {
-    const projectName = project.projectName;
+  for (const projectEntry of projectEntries) {
+    const projectName = projectEntry.projectName;
 
     // Initialize validation data for this project
     const validation: ProjectValidation = {
@@ -49,14 +49,14 @@ export function verify(args: string[]) {
 
     projectValidations.set(projectName, validation);
 
-    for (const { fileInfo } of traverseFileInfo(project.entry.fileInfo)) {
+    for (const { fileInfo } of traverseFileInfo(projectEntry.entry.fileInfo)) {
       const encapsulations = Object.keys(
-        hasEncapsulationViolations(fileInfo.path, project.entry),
+        hasEncapsulationViolations(fileInfo.path, projectEntry.entry),
       );
 
       const dependencyRuleViolations = checkForDependencyRuleViolation(
         fileInfo.path,
-        project.entry,
+        projectEntry.entry,
       );
       const projectValidation = projectValidations.get(projectName)!;
       projectValidation.encapsulations = encapsulations;
