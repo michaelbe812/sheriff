@@ -3,6 +3,7 @@ import { init, ProjectInfo } from '../../main/init';
 import { parseConfig } from '../../config/parse-config';
 import { toFsPath } from '../../file-info/fs-path';
 import { isEmptyRecord } from './is-empty-record';
+import { parseStringOrRecord } from './parse-string-or-record';
 
 export type ProjectEntry<TEntry> = {
   projectName: string;
@@ -12,7 +13,11 @@ export type ProjectEntry<TEntry> = {
 export const DEFAULT_PROJECT_NAME = 'default';
 
 export function getEntryFromCliOrConfig<R extends boolean = true>(
-  entryFileOrEntryPoints?: string | Record<string, string>,
+  /**
+   * the CLI forwards the entry file either as e.g. "src/main.ts" or
+   * as entry points: '{ 'app-i': 'projects/app-i/src/main.ts', 'app-ii': 'projects/app-ii/src/main.ts', }'
+   */
+  entryFileOrEntryPoints?: string,
   runInit: R = true as R,
 ): R extends false
   ? Array<ProjectEntry<string>>
@@ -24,7 +29,7 @@ export function getEntryFromCliOrConfig<R extends boolean = true>(
    */
   if (entryFileOrEntryPoints) {
     return processEntryFile(
-      entryFileOrEntryPoints,
+      parseStringOrRecord(entryFileOrEntryPoints),
       runInit,
       fs,
     ) as R extends false

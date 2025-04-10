@@ -135,10 +135,12 @@ describe('get entry file from CLI or config', () => {
         },
       });
 
-      const projectEntries = getEntryFromCliOrConfig({
-        'project-i': 'projects/project-i/src/main.ts',
-        'project-ii': 'projects/project-ii/src/main.ts',
-      });
+      const projectEntries = getEntryFromCliOrConfig(
+        JSON.stringify({
+          'project-i': 'projects/project-i/src/main.ts',
+          'project-ii': 'projects/project-ii/src/main.ts',
+        }),
+      );
 
       expect(projectEntries).toHaveLength(2);
       expect(projectEntries[0].entry.fileInfo.path).toBe(
@@ -209,9 +211,11 @@ describe('get entry file from CLI or config', () => {
         },
       });
 
-      const projectEntries = getEntryFromCliOrConfig({
-        'project-i': 'projects/project-i/src/main.ts',
-      });
+      const projectEntries = getEntryFromCliOrConfig(
+        JSON.stringify({
+          'project-i': 'projects/project-i/src/main.ts',
+        }),
+      );
 
       expect(projectEntries).toHaveLength(1);
       expect(projectEntries[0].entry.fileInfo.path).toBe(
