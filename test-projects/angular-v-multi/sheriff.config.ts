@@ -1,10 +1,10 @@
 import { SheriffConfig } from '@softarc/sheriff-core';
 
 export const config: SheriffConfig = {
-  entryFile: {
-     'app-i': 'projects/app-i/src/main.ts',
-     'app-ii': 'projects/app-ii/src/main.ts',
-   },
+  entryPoints: {
+    'app-i': 'projects/app-i/src/main.ts',
+    'app-ii': 'projects/app-ii/src/main.ts',
+  },
   enableBarrelLess: true,
   showWarningOnBarrelCollision: false,
   modules: {
@@ -32,5 +32,4 @@ export const config: SheriffConfig = {
     'type:types': ['type:types'],
     'type:data-access': ['type:types', 'type:util', 'type:data-access'],
   },
-
 };
