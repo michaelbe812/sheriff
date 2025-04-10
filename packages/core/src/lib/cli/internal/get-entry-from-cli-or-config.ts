@@ -2,7 +2,7 @@ import getFs from '../../fs/getFs';
 import { init, ProjectInfo } from '../../main/init';
 import { parseConfig } from '../../config/parse-config';
 import { toFsPath } from '../../file-info/fs-path';
-
+import { isEmptyRecord } from './is-empty-record';
 
 export type ProjectEntry<TEntry> = {
   projectName: string;
@@ -11,16 +11,23 @@ export type ProjectEntry<TEntry> = {
 
 export const DEFAULT_PROJECT_NAME = 'default';
 
-
-
 export function getEntryFromCliOrConfig<R extends boolean = true>(
-  entryFile?: string | Record<string, string>,
-  runInit: R = true as R
-): R extends false ? Array<ProjectEntry<string>> : Array<ProjectEntry<ProjectInfo>> {
+  entryFileOrEntryPoints?: string | Record<string, string>,
+  runInit: R = true as R,
+): R extends false
+  ? Array<ProjectEntry<string>>
+  : Array<ProjectEntry<ProjectInfo>> {
   const fs = getFs();
 
-  if (entryFile) {
-    return processEntryFile(entryFile, runInit, fs) as R extends false
+  /**
+   * CLI argument given
+   */
+  if (entryFileOrEntryPoints) {
+    return processEntryFile(
+      entryFileOrEntryPoints,
+      runInit,
+      fs,
+    ) as R extends false
       ? Array<ProjectEntry<string>>
       : Array<ProjectEntry<ProjectInfo>>;
   }
@@ -28,26 +35,49 @@ export function getEntryFromCliOrConfig<R extends boolean = true>(
   const potentialConfigFile = fs.join(fs.cwd(), 'sheriff.config.ts');
   if (fs.exists(potentialConfigFile)) {
     const sheriffConfig = parseConfig(potentialConfigFile);
+
+    if (sheriffConfig.entryFile && !isEmptyRecord(sheriffConfig.entryPoints)) {
+      throw new Error(
+        'Both entry file and entry points found in sheriff.config.ts. Please provide only one option',
+      );
+    }
+
     if (sheriffConfig.entryFile) {
-      return processEntryFile(sheriffConfig.entryFile, runInit, fs) as R extends false
+      return processEntryFile(
+        sheriffConfig.entryFile,
+        runInit,
+        fs,
+      ) as R extends false
+        ? Array<ProjectEntry<string>>
+        : Array<ProjectEntry<ProjectInfo>>;
+    } else if (
+      sheriffConfig.entryPoints &&
+      !isEmptyRecord(sheriffConfig.entryPoints)
+    ) {
+      return processEntryFile(
+        sheriffConfig.entryPoints,
+        runInit,
+        fs,
+      ) as R extends false
         ? Array<ProjectEntry<string>>
         : Array<ProjectEntry<ProjectInfo>>;
     } else {
       throw new Error(
-        'No entry file found in sheriff.config.ts. Please provide one via the CLI ',
+        'No entry file or entry points found in sheriff.config.ts. Please provide the option via the CLI.',
       );
     }
   }
 
-  throw new Error('Please provide an entry file, e.g. main.ts');
+  throw new Error(
+    'Please provide an entry file (e.g. main.ts) or entry points (e.g. { projectName: "main.ts" })',
+  );
 }
-
 
 // Helper function to process entry file consistently
 function processEntryFile(
   entryFileValue: string | Record<string, string>,
   runInit: boolean,
-  fs: ReturnType<typeof getFs>
+  fs: ReturnType<typeof getFs>,
 ): Array<ProjectEntry<ProjectInfo>> | Array<ProjectEntry<string>> {
   if (typeof entryFileValue === 'string') {
     return runInit
