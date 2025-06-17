@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createProject } from '../../test/project-creator';
 import { tsConfig } from '../../test/fixtures/ts-config';
 import { sheriffConfig } from '../../test/project-configurator';
-import { getEntryFromCliOrConfig } from '../internal/get-entry-from-cli-or-config';
+import { getEntriesFromCliOrConfig } from '../internal/get-entries-from-cli-or-config';
 
 describe('get entry file from CLI or config', () => {
   it('should use the CLI entry file', () => {
@@ -16,7 +16,7 @@ describe('get entry file from CLI or config', () => {
       },
     });
 
-    const projectInfo = getEntryFromCliOrConfig('./src/main.ts')[0];
+    const projectInfo = getEntriesFromCliOrConfig('./src/main.ts')[0];
 
     expect(projectInfo.entry.fileInfo.path).toBe('/project/src/main.ts');
   });
@@ -33,7 +33,7 @@ describe('get entry file from CLI or config', () => {
       },
     });
 
-    const projectInfo = getEntryFromCliOrConfig()[0];
+    const projectInfo = getEntriesFromCliOrConfig()[0];
 
     expect(projectInfo.entry.fileInfo.path).toBe('/project/src/app.ts');
   });
@@ -51,7 +51,7 @@ describe('get entry file from CLI or config', () => {
       },
     });
 
-    const projectInfo = getEntryFromCliOrConfig('src/main.ts')[0];
+    const projectInfo = getEntriesFromCliOrConfig('src/main.ts')[0];
 
     expect(projectInfo.entry.fileInfo.path).toBe('/project/src/main.ts');
   });
@@ -61,7 +61,7 @@ describe('get entry file from CLI or config', () => {
       'tsconfig.json': tsConfig(),
     });
 
-    expect(() => getEntryFromCliOrConfig()).toThrow(
+    expect(() => getEntriesFromCliOrConfig()).toThrow(
       'Please provide an entry file (e.g. main.ts) or entry points (e.g. { projectName: "main.ts" })',
     );
   });
@@ -74,7 +74,7 @@ describe('get entry file from CLI or config', () => {
       }),
     });
 
-    expect(() => getEntryFromCliOrConfig()).toThrow(
+    expect(() => getEntriesFromCliOrConfig()).toThrow(
       'No entry file or entry points found in sheriff.config.ts. Please provide the option via the CLI.',
     );
   });
@@ -103,7 +103,7 @@ describe('get entry file from CLI or config', () => {
       },
     });
 
-    expect(() => getEntryFromCliOrConfig()).toThrow(
+    expect(() => getEntriesFromCliOrConfig()).toThrow(
       'Both entry file and entry points found in sheriff.config.ts. Please provide only one option',
     );
   });
@@ -135,7 +135,7 @@ describe('get entry file from CLI or config', () => {
         },
       });
 
-      const projectEntries = getEntryFromCliOrConfig(
+      const projectEntries = getEntriesFromCliOrConfig(
         JSON.stringify({
           'project-i': 'projects/project-i/src/main.ts',
           'project-ii': 'projects/project-ii/src/main.ts',
@@ -181,7 +181,7 @@ describe('get entry file from CLI or config', () => {
         },
       });
 
-      const projectEntries = getEntryFromCliOrConfig();
+      const projectEntries = getEntriesFromCliOrConfig();
 
       expect(projectEntries).toHaveLength(2);
       expect(projectEntries[0].entry.fileInfo.path).toBe(
@@ -211,7 +211,7 @@ describe('get entry file from CLI or config', () => {
         },
       });
 
-      const projectEntries = getEntryFromCliOrConfig(
+      const projectEntries = getEntriesFromCliOrConfig(
         JSON.stringify({
           'project-i': 'projects/project-i/src/main.ts',
         }),

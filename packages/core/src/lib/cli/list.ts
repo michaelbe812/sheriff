@@ -1,13 +1,13 @@
 import { FsPath, toFsPath } from '../file-info/fs-path';
 import { ProjectInfo } from '../main/init';
 import { calcTagsForModule } from '../tags/calc-tags-for-module';
-import { getEntryFromCliOrConfig } from './internal/get-entry-from-cli-or-config';
+import { getEntriesFromCliOrConfig } from './internal/get-entries-from-cli-or-config';
 import getFs from '../fs/getFs';
 import { cli } from './cli';
 import { logInfoForMissingSheriffConfig } from './internal/log-info-for-missing-sheriff-config';
 
 export function list(args: string[]) {
-  const projectEntries = getEntryFromCliOrConfig(args[0]);
+  const projectEntries = getEntriesFromCliOrConfig(args[0]);
   if (projectEntries.length > 0) {
     logInfoForMissingSheriffConfig(projectEntries[0].entry);
   }

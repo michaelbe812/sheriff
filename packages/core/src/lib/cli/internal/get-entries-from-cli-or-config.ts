@@ -12,7 +12,7 @@ export type ProjectEntry<TEntry> = {
 
 export const DEFAULT_PROJECT_NAME = 'default';
 
-export function getEntryFromCliOrConfig<R extends boolean = true>(
+export function getEntriesFromCliOrConfig<R extends boolean = true>(
   /**
    * the CLI forwards the entry file either as e.g. "src/main.ts" or
    * as entry points: '{ 'app-i': 'projects/app-i/src/main.ts', 'app-ii': 'projects/app-ii/src/main.ts', }'

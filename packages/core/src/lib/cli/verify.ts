@@ -1,9 +1,15 @@
 import { hasEncapsulationViolations } from '../checks/has-encapsulation-violations';
 import { traverseFileInfo } from '../modules/traverse-file-info';
-import { checkForDependencyRuleViolation, DependencyRuleViolation } from '../checks/check-for-dependency-rule-violation';
+import {
+  checkForDependencyRuleViolation,
+  DependencyRuleViolation,
+} from '../checks/check-for-dependency-rule-violation';
 import getFs from '../fs/getFs';
 import { cli } from './cli';
-import { DEFAULT_PROJECT_NAME, getEntryFromCliOrConfig } from './internal/get-entry-from-cli-or-config';
+import {
+  DEFAULT_PROJECT_NAME,
+  getEntriesFromCliOrConfig,
+} from './internal/get-entries-from-cli-or-config';
 import { logInfoForMissingSheriffConfig } from './internal/log-info-for-missing-sheriff-config';
 
 type ValidationsMap = Record<
@@ -23,7 +29,7 @@ type ProjectValidation = {
 
 export function verify(args: string[]) {
   const fs = getFs();
-  const projectEntries = getEntryFromCliOrConfig(args[0]);
+  const projectEntries = getEntriesFromCliOrConfig(args[0]);
   logInfoForMissingSheriffConfig(projectEntries[0].entry);
 
   // Keep track of overall status to determine final process exit code
@@ -46,7 +52,6 @@ export function verify(args: string[]) {
       dependencyRuleViolations: [],
     };
 
-
     projectValidations.set(projectName, validation);
 
     for (const { fileInfo } of traverseFileInfo(projectEntry.entry.fileInfo)) {
@@ -63,11 +68,11 @@ export function verify(args: string[]) {
       projectValidation.dependencyRuleViolations = dependencyRuleViolations;
 
       if (encapsulations.length > 0 || dependencyRuleViolations.length > 0) {
-
         projectValidation.hasError = true;
         projectValidation.filesCount++;
         projectValidation.deepImportsCount += encapsulations.length;
-        projectValidation.dependencyRulesCount += dependencyRuleViolations.length;
+        projectValidation.dependencyRulesCount +=
+          dependencyRuleViolations.length;
         hasAnyProjectError = true;
 
         const dependencyRules = dependencyRuleViolations.map(
@@ -98,8 +103,12 @@ export function verify(args: string[]) {
     if (validation.hasError) {
       cli.log('Issues found:');
       cli.log(`  Total Invalid Files: ${validation.filesCount}`);
-      cli.log(`  Total Encapsulation Violations: ${validation.deepImportsCount}`);
-      cli.log(`  Total Dependency Rule Violations: ${validation.dependencyRulesCount}`);
+      cli.log(
+        `  Total Encapsulation Violations: ${validation.deepImportsCount}`,
+      );
+      cli.log(
+        `  Total Dependency Rule Violations: ${validation.dependencyRulesCount}`,
+      );
       cli.log('----------------------------------');
       cli.log('');
 
@@ -124,7 +133,9 @@ export function verify(args: string[]) {
       }
     } else {
       cli.log('');
-      cli.log('\u001b[32mNo issues found for this project. Well done!\u001b[0m');
+      cli.log(
+        '\u001b[32mNo issues found for this project. Well done!\u001b[0m',
+      );
     }
   }
 
