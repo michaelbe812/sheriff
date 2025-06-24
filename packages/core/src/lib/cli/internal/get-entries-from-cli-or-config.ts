@@ -47,6 +47,27 @@ export function getEntriesFromCliOrConfig<R extends boolean = true>(
       );
     }
 
+    /**
+     * TODo case when CLI argument --all/ --only-default is given
+     * and configfile exist
+     * get defaultEntryPoint or `default` in entryPoints
+     *
+     */
+    const todoCLiArgument = false;
+    if (todoCLiArgument) {
+      const defaultEntryPoint =
+        sheriffConfig.defaultEntryPoint ?? sheriffConfig.entryPoints['default'];
+
+      if (!defaultEntryPoint) {
+        throw new Error(
+          'No default entry point found in sheriff.config.ts. Please provide the option via the CLI.',
+        );
+      }
+      return processEntryFile(defaultEntryPoint, runInit, fs) as R extends false
+        ? Array<ProjectEntry<string>>
+        : Array<ProjectEntry<ProjectInfo>>;
+    }
+
     if (sheriffConfig.entryFile) {
       return processEntryFile(
         sheriffConfig.entryFile,

@@ -260,4 +260,21 @@ export interface UserSheriffConfig {
    * Either `entryFile` or `entryPoints` can be set, but not both.
    */
   entryPoints?: Record<string, string>;
+
+  /**
+   * The default entry point which is picked up by the CLI commands when running
+   * npx sheriff verify, list or export-data
+   * to use when multiple entry points are defined.
+   * Must be a key from the `entryPoints` object.
+   *
+   * @example
+   * ```typescript
+   * entryPoints: {
+   *   'app1': 'apps/app1/src/app/main.ts',
+   *   'lib-form': 'libs/form/src/lib/main.ts'
+   * },
+   * defaultEntryPoint: 'app1'
+   * ```
+   */
+  defaultEntryPoint?: keyof NonNullable<UserSheriffConfig['entryPoints']>;
 }
