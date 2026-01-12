@@ -139,3 +139,32 @@
 
 ### Files Created
 - `packages/core/src/lib/plugin/create-plugin-api.ts`
+
+---
+
+## 2026-01-12: plugin-barrel
+
+### Completed
+- Created `packages/core/src/lib/plugin/index.ts` as the barrel file for the plugin module
+- Re-exported all plugin system components:
+  - `SheriffPlugin` from `./plugin`
+  - `SheriffPluginAPI`, `VerificationResult`, `FileViolations`, `DependencyViolationInfo`, `ProjectDataOptions` from `./plugin-api`
+  - `findPluginByName`, `validatePlugin` from `./plugin-resolver`
+  - `createPluginAPI` from `./create-plugin-api`
+
+### Implementation Details
+- Added comprehensive JSDoc module documentation with usage examples
+- Exports organized by category: interface, API types, resolver functions, factory
+- No circular dependency issues confirmed via successful build
+
+### Notes for Next Developer
+- All plugin types and functions are now importable from a single location: `lib/plugin`
+- This barrel file enables the `public-exports` task to export from the package index
+- Next priority tasks (in order):
+  1. `get-plugins-helper` - Create helper to load plugins from config
+  2. `async-error-handler` - Add async error handling for plugin execution
+  3. `plugin-command` - Create plugin command executor
+- Build passes (`npm run build:all`), all 347 tests pass, lint passes
+
+### Files Created
+- `packages/core/src/lib/plugin/index.ts`

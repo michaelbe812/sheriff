@@ -130,7 +130,7 @@
       "All plugin functions exportable from lib/plugin",
       "No circular dependency issues"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "get-plugins-helper",
