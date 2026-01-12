@@ -91,7 +91,7 @@
       "validatePlugin throws PluginInvalidError if name is missing",
       "validatePlugin throws PluginInvalidError if execute is not a function"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "plugin-api-factory",

@@ -80,3 +80,29 @@
 ### Files Modified
 - `packages/core/src/lib/config/user-sheriff-config.ts`
 - `packages/core/src/lib/config/configuration.ts`
+
+---
+
+## 2026-01-12: plugin-resolver
+
+### Completed
+- Created `packages/core/src/lib/plugin/plugin-resolver.ts` with:
+  - `validatePlugin(plugin)` - Type guard that validates a plugin has required `name` (non-empty string) and `execute` (function) properties
+  - `findPluginByName(name, plugins)` - Finds a plugin by name from the plugins array, with proper error handling
+
+### Implementation Details
+- `validatePlugin` uses TypeScript's `asserts` return type for type narrowing
+- Handles edge cases: null/undefined plugins, empty arrays, plugins with invalid/missing properties
+- Throws `PluginNotFoundError` (SH-013) when no matching plugin found
+- Throws `PluginInvalidError` (SH-014) when plugin is malformed
+
+### Notes for Next Developer
+- The resolver is ready to be used by `plugin-command.ts` (future task)
+- Next priority tasks (in order):
+  1. `plugin-api-factory` - Create factory for SheriffPluginAPI (needed before plugin-command)
+  2. `plugin-barrel` - Create plugin module barrel file (lib/plugin/index.ts)
+  3. `get-plugins-helper` - Create helper to load plugins from config
+- Build passes (`npx nx run core:build`), all 347 tests pass
+
+### Files Created
+- `packages/core/src/lib/plugin/plugin-resolver.ts`
