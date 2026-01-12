@@ -1,0 +1,26 @@
+# Sheriff Plugin System - Implementation Progress
+
+## 2026-01-12: plugin-types and plugin-api-types
+
+### Completed
+- Created `packages/core/src/lib/plugin/plugin.ts` with `SheriffPlugin` interface
+- Created `packages/core/src/lib/plugin/plugin-api.ts` with:
+  - `SheriffPluginAPI` interface
+  - `VerificationResult` interface
+  - `FileViolations` interface
+  - `DependencyViolationInfo` interface
+  - `ProjectDataOptions` interface
+
+### Notes for Next Developer
+- These two tasks were completed together because `SheriffPlugin` imports `SheriffPluginAPI`
+- The types are now defined but NOT yet exported from the package index
+- Next priority tasks (in order):
+  1. `plugin-errors` - Add SH-013, SH-014, SH-015 error types to user-error.ts
+  2. `config-types` - Add `plugins?: SheriffPlugin[]` to configuration types
+  3. `plugin-resolver` - Create findPluginByName and validatePlugin functions
+- The `plugin-api.ts` imports `Configuration` from config but doesn't expose it directly - plugins get it via `getConfig()` method
+- Build passes (`nx run core:build`), all 347 tests pass
+
+### Files Created
+- `packages/core/src/lib/plugin/plugin.ts`
+- `packages/core/src/lib/plugin/plugin-api.ts`
