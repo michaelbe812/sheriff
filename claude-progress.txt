@@ -106,3 +106,36 @@
 
 ### Files Created
 - `packages/core/src/lib/plugin/plugin-resolver.ts`
+
+---
+
+## 2026-01-12: plugin-api-factory
+
+### Completed
+- Created `packages/core/src/lib/plugin/create-plugin-api.ts` with:
+  - `createPluginAPI()` - Factory function that returns a `SheriffPluginAPI` implementation
+  - `verifyForPlugin(entryFile?)` - Internal function that runs verification and returns `VerificationResult` without calling `process.exit`
+  - `getProjectDataForPlugin(entryFile?, options?)` - Wrapper around `getProjectData` API
+  - `getConfigForPlugin()` - Returns the parsed `Configuration` object from sheriff.config.ts
+  - `log()` and `logError()` wired to `cli.log` and `cli.logError` respectively
+
+### Implementation Details
+- The `verifyForPlugin` function reuses the same logic from `verify.ts` but:
+  - Returns a structured `VerificationResult` instead of logging to console
+  - Does NOT call `process.exit()` - plugins handle their own exit behavior
+  - Aggregates violations from all entry points into a single result
+- `getProjectDataForPlugin` uses `getEntriesFromCliOrConfig` with `runInit=false` to get entry info, then calls the existing `getProjectData` function
+- `getConfigForPlugin` leverages `getEntriesFromCliOrConfig` which parses the config internally
+
+### Notes for Next Developer
+- The API factory is now ready to be used by `plugin-command.ts`
+- The `verify()` method iterates over all project entries (supporting monorepo configs with multiple entry points)
+- Violations are keyed by relative file path for consistency with other parts of the codebase
+- Next priority tasks (in order):
+  1. `plugin-barrel` - Create plugin module barrel file (lib/plugin/index.ts)
+  2. `get-plugins-helper` - Create helper to load plugins from config
+  3. `async-error-handler` - Add async error handling for plugin execution
+- Build passes (`npx nx run core:build`), all 347 tests pass
+
+### Files Created
+- `packages/core/src/lib/plugin/create-plugin-api.ts`

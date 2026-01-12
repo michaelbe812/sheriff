@@ -113,7 +113,7 @@
       "log() outputs to stdout via cli.log",
       "logError() outputs to stderr via cli.logError"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "plugin-barrel",
