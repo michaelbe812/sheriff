@@ -148,7 +148,7 @@
       "Returns empty array when plugins property is undefined",
       "Handles config parsing errors without crashing"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "async-error-handler",

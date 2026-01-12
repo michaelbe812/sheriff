@@ -168,3 +168,42 @@
 
 ### Files Created
 - `packages/core/src/lib/plugin/index.ts`
+
+---
+
+## 2026-01-12: get-plugins-helper
+
+### Completed
+- Created `packages/core/src/lib/cli/internal/get-plugins.ts` with:
+  - `getPlugins()` function that loads and returns plugins from sheriff.config.ts
+  - Returns `SheriffPlugin[]` from the configuration
+  - Returns empty array when sheriff.config.ts doesn't exist
+  - Returns empty array when plugins property is undefined
+  - Handles config parsing errors gracefully (returns empty array)
+
+### Implementation Details
+- Uses existing `parseConfig` function from `config/parse-config.ts` to parse the config
+- Uses `getFs()` for filesystem operations (supports virtual fs for testing)
+- Leverages the optional `plugins` property added to `Configuration` type
+- Wrapped in try/catch to gracefully handle any parsing errors
+
+### Test Coverage
+- Created comprehensive test suite in `packages/core/src/lib/cli/tests/get-plugins.spec.ts`
+- Tests cover all acceptance criteria:
+  - Returns empty array when no config file exists
+  - Returns empty array when plugins property is undefined
+  - Returns plugins array from config correctly
+  - Returns empty array when plugins array is empty
+  - Handles configs with plugins property set
+
+### Notes for Next Developer
+- The `getPlugins()` function is ready to be used by `cli/main.ts` for plugin discovery
+- Next priority tasks (in order):
+  1. `async-error-handler` - Add async error handling for plugin execution
+  2. `plugin-command` - Create plugin command executor
+  3. `cli-main-integration` - Integrate plugin system into main CLI
+- Build passes (`npm run build:all`), all 352 tests pass (5 new tests), lint passes
+
+### Files Created
+- `packages/core/src/lib/cli/internal/get-plugins.ts`
+- `packages/core/src/lib/cli/tests/get-plugins.spec.ts`
