@@ -1,0 +1,260 @@
+[
+  {
+    "id": "plugin-types",
+    "description": "Create SheriffPlugin interface for plugin authors",
+    "steps": [
+      "Create new file lib/plugin/plugin.ts",
+      "Define SheriffPlugin interface with name, description?, and execute method",
+      "Export the interface"
+    ],
+    "acceptance": [
+      "SheriffPlugin interface exists with name: string property",
+      "SheriffPlugin interface has optional description?: string property",
+      "SheriffPlugin interface has execute(args: string[], api: SheriffPluginAPI): Promise<void> method",
+      "Interface is properly documented with JSDoc comments"
+    ],
+    "passes": true
+  },
+  {
+    "id": "plugin-api-types",
+    "description": "Create SheriffPluginAPI interface and result types",
+    "steps": [
+      "Create new file lib/plugin/plugin-api.ts",
+      "Define SheriffPluginAPI interface with verify, getProjectData, getConfig, log, logError",
+      "Define VerificationResult interface with success, violation counts, and violations record",
+      "Define FileViolations and DependencyViolationInfo interfaces",
+      "Export all types"
+    ],
+    "acceptance": [
+      "SheriffPluginAPI interface has verify(entryFile?: string): VerificationResult",
+      "SheriffPluginAPI interface has getProjectData(entryFile?: string, options?: Options): ProjectData",
+      "SheriffPluginAPI interface has getConfig(): Configuration",
+      "SheriffPluginAPI interface has log(message: string): void",
+      "SheriffPluginAPI interface has logError(message: string): void",
+      "VerificationResult has success, encapsulationViolationCount, dependencyRuleViolationCount, filesWithViolationsCount, violations properties",
+      "FileViolations has encapsulationViolations and dependencyRuleViolations arrays",
+      "DependencyViolationInfo has fromTag, toTags, rawImport properties"
+    ],
+    "passes": true
+  },
+  {
+    "id": "plugin-errors",
+    "description": "Add plugin-specific error types to user-error.ts",
+    "steps": [
+      "Open lib/error/user-error.ts",
+      "Add SH-013, SH-014, SH-015 to UserErrorCode type",
+      "Create PluginNotFoundError class for SH-013",
+      "Create PluginInvalidError class for SH-014",
+      "Create PluginExecutionError class for SH-015",
+      "Export all new error classes"
+    ],
+    "acceptance": [
+      "UserErrorCode includes 'SH-013', 'SH-014', 'SH-015'",
+      "PluginNotFoundError extends UserError with helpful message about registering plugin",
+      "PluginInvalidError extends UserError with message about missing name/execute",
+      "PluginExecutionError extends UserError wrapping original error message",
+      "All error classes are exported"
+    ],
+    "passes": true
+  },
+  {
+    "id": "config-types",
+    "description": "Add plugins property to configuration types",
+    "steps": [
+      "Import SheriffPlugin in user-sheriff-config.ts",
+      "Add optional plugins?: SheriffPlugin[] to UserSheriffConfig",
+      "Update Configuration type in configuration.ts to include plugins",
+      "Add plugins to Omit list so it remains optional"
+    ],
+    "acceptance": [
+      "UserSheriffConfig has plugins?: SheriffPlugin[] property",
+      "Configuration type includes plugins?: SheriffPlugin[]",
+      "plugins is in the Omit list (not made required)",
+      "No TypeScript errors in config files"
+    ],
+    "passes": true
+  },
+  {
+    "id": "plugin-resolver",
+    "description": "Create plugin resolver to find plugins by name",
+    "steps": [
+      "Create new file lib/plugin/plugin-resolver.ts",
+      "Implement findPluginByName(name, plugins) function",
+      "Implement validatePlugin(plugin) function",
+      "Throw PluginNotFoundError when plugin not found",
+      "Throw PluginInvalidError when plugin lacks name or execute"
+    ],
+    "acceptance": [
+      "findPluginByName returns correct plugin instance when found",
+      "findPluginByName throws PluginNotFoundError when plugin name not in array",
+      "findPluginByName handles empty/undefined plugins array gracefully",
+      "validatePlugin throws PluginInvalidError if name is missing",
+      "validatePlugin throws PluginInvalidError if execute is not a function"
+    ],
+    "passes": false
+  },
+  {
+    "id": "plugin-api-factory",
+    "description": "Create factory function that builds SheriffPluginAPI object",
+    "steps": [
+      "Create new file lib/plugin/create-plugin-api.ts",
+      "Implement createPluginAPI() that returns SheriffPluginAPI",
+      "Implement verifyForPlugin() that returns VerificationResult without exiting",
+      "Implement getProjectDataForPlugin() wrapping existing getProjectData",
+      "Implement getConfigForPlugin() returning parsed config",
+      "Wire log and logError to cli.log and cli.logError"
+    ],
+    "acceptance": [
+      "createPluginAPI() returns object implementing SheriffPluginAPI",
+      "verify() returns VerificationResult with correct violation counts",
+      "verify() does NOT call process.exit",
+      "getProjectData() returns ProjectData structure",
+      "getConfig() returns Configuration object",
+      "log() outputs to stdout via cli.log",
+      "logError() outputs to stderr via cli.logError"
+    ],
+    "passes": false
+  },
+  {
+    "id": "plugin-barrel",
+    "description": "Create plugin module barrel file",
+    "steps": [
+      "Create new file lib/plugin/index.ts",
+      "Re-export SheriffPlugin from plugin.ts",
+      "Re-export SheriffPluginAPI and result types from plugin-api.ts",
+      "Re-export resolver functions from plugin-resolver.ts",
+      "Re-export createPluginAPI from create-plugin-api.ts"
+    ],
+    "acceptance": [
+      "All plugin types exportable from lib/plugin",
+      "All plugin functions exportable from lib/plugin",
+      "No circular dependency issues"
+    ],
+    "passes": false
+  },
+  {
+    "id": "get-plugins-helper",
+    "description": "Create helper to load plugins from config",
+    "steps": [
+      "Create new file lib/cli/internal/get-plugins.ts",
+      "Implement getPlugins() function",
+      "Load sheriff.config.ts and extract plugins array",
+      "Return empty array if no config or no plugins property",
+      "Handle config parsing errors gracefully"
+    ],
+    "acceptance": [
+      "getPlugins() returns SheriffPlugin[] from config",
+      "Returns empty array when sheriff.config.ts doesn't exist",
+      "Returns empty array when plugins property is undefined",
+      "Handles config parsing errors without crashing"
+    ],
+    "passes": false
+  },
+  {
+    "id": "async-error-handler",
+    "description": "Add async version of handleError for plugin execution",
+    "steps": [
+      "Open lib/cli/internal/handle-error.ts",
+      "Extract error output logic to handleErrorOutput(error) function",
+      "Create handleErrorAsync(fn: () => Promise<void>) function",
+      "Ensure it catches errors and calls handleErrorOutput",
+      "Call cli.endProcessError() on failure"
+    ],
+    "acceptance": [
+      "handleErrorAsync accepts async function",
+      "handleErrorAsync catches and displays UserError messages",
+      "handleErrorAsync catches and displays generic Error messages",
+      "handleErrorAsync calls cli.endProcessError() on failure",
+      "Original handleError still works unchanged"
+    ],
+    "passes": false
+  },
+  {
+    "id": "plugin-command",
+    "description": "Create plugin command executor",
+    "steps": [
+      "Create new file lib/cli/plugin-command.ts",
+      "Implement executePlugin(pluginName, args, plugins) function",
+      "Find plugin using findPluginByName",
+      "Validate plugin using validatePlugin",
+      "Create API using createPluginAPI",
+      "Call plugin.execute(args, api)",
+      "Wrap execution errors in PluginExecutionError"
+    ],
+    "acceptance": [
+      "executePlugin finds and executes correct plugin",
+      "Plugin receives CLI args array",
+      "Plugin receives valid SheriffPluginAPI object",
+      "Throws PluginNotFoundError for unknown plugin",
+      "Throws PluginInvalidError for malformed plugin",
+      "Wraps plugin errors in PluginExecutionError"
+    ],
+    "passes": false
+  },
+  {
+    "id": "cli-main-integration",
+    "description": "Integrate plugin system into main CLI",
+    "steps": [
+      "Open lib/cli/main.ts",
+      "Define BUILTIN_COMMANDS set with init, verify, list, export, version",
+      "Add isBuiltinCommand(cmd) check",
+      "Keep synchronous flow for built-in commands",
+      "Add async handlePluginOrHelp for non-built-in commands",
+      "Call executePlugin when plugin found",
+      "Update showHelp to list registered plugins"
+    ],
+    "acceptance": [
+      "Built-in commands (verify, list, export, init, version) work unchanged",
+      "Unknown command checks plugins array by name",
+      "Plugin command executes plugin.execute()",
+      "Unknown command with no matching plugin shows help",
+      "Help output lists registered plugins with descriptions",
+      "Process exits with 0 on plugin success",
+      "Process exits with 1 on plugin failure"
+    ],
+    "passes": false
+  },
+  {
+    "id": "public-exports",
+    "description": "Export plugin types from package index",
+    "steps": [
+      "Open src/index.ts",
+      "Import plugin types from lib/plugin",
+      "Export SheriffPlugin interface",
+      "Export SheriffPluginAPI interface",
+      "Export VerificationResult, FileViolations, DependencyViolationInfo"
+    ],
+    "acceptance": [
+      "SheriffPlugin importable from @softarc/sheriff-core",
+      "SheriffPluginAPI importable from @softarc/sheriff-core",
+      "VerificationResult importable from @softarc/sheriff-core",
+      "FileViolations importable from @softarc/sheriff-core",
+      "DependencyViolationInfo importable from @softarc/sheriff-core"
+    ],
+    "passes": false
+  },
+  {
+    "id": "e2e-plugin-test",
+    "description": "End-to-end test of plugin system",
+    "steps": [
+      "Create a test plugin class implementing SheriffPlugin",
+      "Register plugin in sheriff.config.ts",
+      "Run npx sheriff <plugin-name>",
+      "Verify plugin executes and can call API methods",
+      "Verify plugin can access verification results",
+      "Verify plugin can access project data",
+      "Test error handling for invalid plugin names"
+    ],
+    "acceptance": [
+      "npx sheriff verify still works (no regression)",
+      "npx sheriff <plugin-name> executes the plugin",
+      "Plugin can call api.verify() and get results",
+      "Plugin can call api.getProjectData() and get data",
+      "Plugin can call api.getConfig() and get config",
+      "Plugin can call api.log() and see output",
+      "npx sheriff unknown-plugin shows helpful error",
+      "Help output shows registered plugins"
+    ],
+    "passes": false
+  }
+]

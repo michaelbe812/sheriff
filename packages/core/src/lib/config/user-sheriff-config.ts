@@ -1,5 +1,6 @@
 import { ModuleConfig } from './module-config';
 import { DependencyRulesConfig } from './dependency-rules-config';
+import { SheriffPlugin } from '../plugin/plugin';
 
 /**
  * Exported by **sheriff.config.ts**. It is optional and should be located
@@ -280,4 +281,26 @@ export interface UserSheriffConfig {
    * ```
    */
   ignoreFileExtensions?: string[] | ((defaults: string[]) => string[]);
+
+  /**
+   * Plugins extend Sheriff with custom commands.
+   *
+   * Each plugin is invoked via CLI using its name. For example,
+   * a plugin with `name: 'junit'` is invoked via `npx sheriff junit`.
+   *
+   * @example
+   * ```typescript
+   * import { SheriffConfig } from '@softarc/sheriff-core';
+   * import { JunitReporterPlugin } from 'sheriff-junit-plugin';
+   *
+   * export const config: SheriffConfig = {
+   *   modules: { ... },
+   *   depRules: { ... },
+   *   plugins: [
+   *     new JunitReporterPlugin({ outputPath: 'reports/junit.xml' })
+   *   ]
+   * };
+   * ```
+   */
+  plugins?: SheriffPlugin[];
 }

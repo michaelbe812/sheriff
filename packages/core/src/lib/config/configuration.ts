@@ -1,4 +1,5 @@
 import { UserSheriffConfig } from './user-sheriff-config';
+import { SheriffPlugin } from '../plugin/plugin';
 
 export type Configuration = Required<
   Omit<
@@ -7,6 +8,7 @@ export type Configuration = Required<
     | 'showWarningOnBarrelCollision'
     | 'encapsulatedFolderNameForBarrelLess'
     | 'entryPoints'
+    | 'plugins'
   >
 > & {
   // dependency rules will skip if `isConfigFileMissing` is true
@@ -18,4 +20,6 @@ export type Configuration = Required<
   entryPoints?: Record<string, string>;
   // ignoreFileExtensions is always present (either user-specified or default)
   ignoreFileExtensions: string[];
+  // plugins remain optional - they extend Sheriff with custom CLI commands
+  plugins?: SheriffPlugin[];
 };

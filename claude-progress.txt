@@ -48,3 +48,35 @@
 
 ### Files Modified
 - `packages/core/src/lib/error/user-error.ts`
+
+---
+
+## 2026-01-12: config-types
+
+### Completed
+- Added `plugins` property to configuration types:
+  - Imported `SheriffPlugin` in `packages/core/src/lib/config/user-sheriff-config.ts`
+  - Added `plugins?: SheriffPlugin[]` property to `UserSheriffConfig` with JSDoc documentation
+  - Imported `SheriffPlugin` in `packages/core/src/lib/config/configuration.ts`
+  - Added `'plugins'` to the `Omit` list so it remains optional (not made required via `Required<>`)
+  - Added `plugins?: SheriffPlugin[]` property to the `Configuration` type intersection
+
+### Notes for Next Developer
+- The plugins property is now available in both config types
+- Users can define plugins in their `sheriff.config.ts` like:
+  ```typescript
+  export const config: SheriffConfig = {
+    modules: { ... },
+    depRules: { ... },
+    plugins: [new MyPlugin()]
+  };
+  ```
+- Next priority tasks (in order):
+  1. `plugin-resolver` - Create findPluginByName and validatePlugin functions
+  2. `plugin-api-factory` - Create factory for SheriffPluginAPI
+  3. `plugin-barrel` - Create plugin module barrel file (lib/plugin/index.ts)
+- Build passes (`npx nx run core:build`), all 347 tests pass
+
+### Files Modified
+- `packages/core/src/lib/config/user-sheriff-config.ts`
+- `packages/core/src/lib/config/configuration.ts`
