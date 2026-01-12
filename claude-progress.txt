@@ -24,3 +24,27 @@
 ### Files Created
 - `packages/core/src/lib/plugin/plugin.ts`
 - `packages/core/src/lib/plugin/plugin-api.ts`
+
+---
+
+## 2026-01-12: plugin-errors
+
+### Completed
+- Added plugin-specific error types to `packages/core/src/lib/error/user-error.ts`:
+  - Extended `UserErrorCode` type with `SH-013`, `SH-014`, `SH-015`
+  - Created `PluginNotFoundError` (SH-013) - thrown when plugin name not found in plugins array
+  - Created `PluginInvalidError` (SH-014) - thrown when plugin missing required name/execute properties
+  - Created `PluginExecutionError` (SH-015) - wraps errors thrown during plugin execution
+
+### Notes for Next Developer
+- These error classes are ready to be used by the plugin-resolver and plugin-command implementations
+- All errors have JSDoc comments explaining their purpose
+- `PluginExecutionError` accepts either an Error object or a string for flexibility
+- Next priority tasks (in order):
+  1. `config-types` - Add `plugins?: SheriffPlugin[]` to configuration types
+  2. `plugin-resolver` - Create findPluginByName and validatePlugin functions (will use these errors)
+  3. `plugin-api-factory` - Create factory for SheriffPluginAPI
+- Build passes (`npx nx run-many --target=build`), all 347 tests pass
+
+### Files Modified
+- `packages/core/src/lib/error/user-error.ts`

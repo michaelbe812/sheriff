@@ -10,7 +10,10 @@ export type UserErrorCode =
   | 'SH-009'
   | 'SH-010'
   | 'SH-011'
-  | 'SH-012';
+  | 'SH-012'
+  | 'SH-013'
+  | 'SH-014'
+  | 'SH-015';
 
 export class UserError extends Error {
   constructor(
@@ -120,5 +123,45 @@ export class CollidingEntrySettings extends UserError {
 export class NoEntryPointsFoundError extends UserError {
   constructor() {
     super('SH-012', 'No entryPoints defined in sheriff.config.ts.');
+  }
+}
+
+/**
+ * Error thrown when a plugin with the specified name is not found in the plugins array.
+ */
+export class PluginNotFoundError extends UserError {
+  constructor(pluginName: string) {
+    super(
+      'SH-013',
+      `Plugin '${pluginName}' not found. Make sure to register the plugin in your sheriff.config.ts plugins array.`,
+    );
+  }
+}
+
+/**
+ * Error thrown when a plugin instance is missing required properties (name or execute).
+ */
+export class PluginInvalidError extends UserError {
+  constructor(details: string) {
+    super(
+      'SH-014',
+      `Invalid plugin configuration: ${details}. Plugins must have a 'name' property and an 'execute' method.`,
+    );
+  }
+}
+
+/**
+ * Error thrown when a plugin's execute method throws an error.
+ */
+export class PluginExecutionError extends UserError {
+  constructor(pluginName: string, originalError: Error | string) {
+    const errorMessage =
+      originalError instanceof Error
+        ? originalError.message
+        : String(originalError);
+    super(
+      'SH-015',
+      `Plugin '${pluginName}' failed during execution: ${errorMessage}`,
+    );
   }
 }
