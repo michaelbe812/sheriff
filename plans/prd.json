@@ -167,7 +167,7 @@
       "handleErrorAsync calls cli.endProcessError() on failure",
       "Original handleError still works unchanged"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "plugin-command",
@@ -189,7 +189,7 @@
       "Throws PluginInvalidError for malformed plugin",
       "Wraps plugin errors in PluginExecutionError"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "cli-main-integration",

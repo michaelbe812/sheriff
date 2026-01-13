@@ -207,3 +207,49 @@
 ### Files Created
 - `packages/core/src/lib/cli/internal/get-plugins.ts`
 - `packages/core/src/lib/cli/tests/get-plugins.spec.ts`
+
+---
+
+## 2026-01-13: plugin-command
+
+### Completed
+- Created `packages/core/src/lib/cli/plugin-command.ts` with:
+  - `executePlugin(pluginName, args, plugins)` function that handles the complete plugin execution flow
+  - Finds plugin by name using `findPluginByName`
+  - Validates plugin structure using `validatePlugin`
+  - Creates `SheriffPluginAPI` instance using `createPluginAPI`
+  - Executes the plugin's `execute` method
+  - Wraps any thrown errors in `PluginExecutionError`
+
+### Implementation Details
+- The function is async to support plugins that perform async operations
+- Error handling is comprehensive:
+  - `PluginNotFoundError` when no plugin matches the name
+  - `PluginInvalidError` when plugin is malformed (missing name or execute)
+  - `PluginExecutionError` wraps any error thrown during plugin execution
+- The function receives pre-loaded plugins array (from `getPlugins()`)
+
+### Test Coverage
+- Created comprehensive test suite in `packages/core/src/lib/cli/tests/plugin-command.spec.ts`
+- 17 tests covering all acceptance criteria:
+  - Plugin discovery (finds correct plugin, handles not found)
+  - Plugin validation (missing name, missing execute, invalid execute type)
+  - Plugin execution (passes args, passes API object)
+  - Error handling (wraps errors, includes plugin name, handles non-Error throws)
+  - Successful execution resolution
+
+### Notes for Next Developer
+- The `executePlugin()` function is ready to be integrated into `cli/main.ts`
+- Next priority tasks (in order):
+  1. `cli-main-integration` - Integrate plugin system into main CLI (use `handleErrorAsync` and `executePlugin`)
+  2. `public-exports` - Export plugin types from package index
+  3. `e2e-plugin-test` - End-to-end test of plugin system
+- Build passes (`npm run build:all`), all 374 tests pass (17 new tests), lint passes
+
+### Files Created
+- `packages/core/src/lib/cli/plugin-command.ts`
+- `packages/core/src/lib/cli/tests/plugin-command.spec.ts`
+
+### PRD Update
+- Marked `async-error-handler` as passing (was already implemented by previous developer)
+- Marked `plugin-command` as passing
