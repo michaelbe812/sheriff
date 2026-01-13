@@ -298,3 +298,38 @@
 
 ### PRD Update
 - Marked `cli-main-integration` as passing
+
+---
+
+## 2026-01-13: public-exports
+
+### Completed
+- Verified that plugin types are already exported from `packages/core/src/index.ts`:
+  - `SheriffPlugin` interface
+  - `SheriffPluginAPI` interface
+  - `VerificationResult` interface
+  - `FileViolations` interface
+  - `DependencyViolationInfo` interface
+
+### Implementation Details
+- The exports were already added by a previous developer in `packages/core/src/index.ts`
+- All types are exported from the `lib/plugin` barrel file
+- Built declaration file (`dist/packages/core/src/index.d.ts`) confirms proper type exports
+- Users can now import plugin types like:
+  ```typescript
+  import { SheriffPlugin, SheriffPluginAPI, VerificationResult } from '@softarc/sheriff-core';
+  ```
+
+### Verification
+- Build passes (`npm run build:all`)
+- All 387 tests pass (`npm run test -- --run`)
+- Lint passes (`npm run lint:all`)
+- Types confirmed in built output
+
+### Notes for Next Developer
+- The plugin system implementation is nearly complete
+- Only remaining task: `e2e-plugin-test` - End-to-end test of plugin system
+- This is the final acceptance test to verify the full plugin workflow works end-to-end
+
+### PRD Update
+- Marked `public-exports` as passing

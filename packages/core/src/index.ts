@@ -6,3 +6,12 @@ export { noDependencies } from './lib/checks/no-dependencies';
 export { UserSheriffConfig as SheriffConfig } from './lib/config/user-sheriff-config';
 export { UserError } from './lib/error/user-error';
 export { getProjectData, ProjectData } from './lib/api/get-project-data';
+
+// Plugin system types
+export {
+  SheriffPlugin,
+  SheriffPluginAPI,
+  VerificationResult,
+  FileViolations,
+  DependencyViolationInfo,
+} from './lib/plugin';

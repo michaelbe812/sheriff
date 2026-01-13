@@ -231,7 +231,7 @@
       "FileViolations importable from @softarc/sheriff-core",
       "DependencyViolationInfo importable from @softarc/sheriff-core"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "e2e-plugin-test",
