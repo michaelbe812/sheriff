@@ -255,6 +255,6 @@
       "npx sheriff unknown-plugin shows helpful error",
       "Help output shows registered plugins"
     ],
-    "passes": false
+    "passes": true
   }
 ]

@@ -333,3 +333,68 @@
 
 ### PRD Update
 - Marked `public-exports` as passing
+
+---
+
+## 2026-01-13: e2e-plugin-test
+
+### Completed
+- Created comprehensive end-to-end test suite for the plugin system in `packages/core/src/lib/cli/tests/plugin-e2e.spec.ts`
+- Tests verify all acceptance criteria:
+  - Built-in command regression tests (verify, list still work)
+  - Plugin API method tests (verify(), getProjectData(), getConfig(), log(), logError())
+  - Plugin CLI argument passing
+  - Error handling for unknown plugins
+  - Complete plugin workflow tests
+
+### Test Coverage (13 new tests)
+The e2e test suite covers:
+1. **Built-in command regression tests**
+   - `npx sheriff verify` works without plugins
+   - `npx sheriff verify` detects violations correctly
+   - `npx sheriff list` still works
+
+2. **Plugin API method tests**
+   - `api.verify()` returns VerificationResult with correct structure
+   - `api.verify()` detects dependency rule violations with detailed info
+   - `api.getProjectData()` returns ProjectData (Record<string, ProjectDataEntry>)
+   - `api.getConfig()` returns Configuration object
+   - `api.log()` outputs to stdout
+   - `api.logError()` outputs to stderr
+
+3. **Plugin CLI argument passing**
+   - Plugin receives arguments passed after plugin name
+
+4. **Error handling**
+   - Shows help when plugin name not found
+
+5. **Complete workflow tests**
+   - Plugin can verify project and report results
+   - Plugin can combine verify and getConfig
+
+### Implementation Notes
+- Tests use `vi.spyOn(getPluginsModule, 'getPlugins')` to inject mock plugins
+- Tests use `vi.waitFor()` to handle async plugin execution
+- All tests create proper project structure with `createProject()` and `sheriffConfig()`
+- The `ProjectData` type is `Record<string, ProjectDataEntry>`, not an object with `modules` property
+
+### Verification
+- Build passes (`npm run build:all`)
+- All 400 tests pass (13 new tests in plugin-e2e.spec.ts)
+- Lint passes (`npm run lint:all`)
+
+### Notes for Next Developer
+- **The plugin system implementation is now COMPLETE!**
+- All 13 tasks in the PRD now pass
+- Plugin authors can now:
+  1. Implement the `SheriffPlugin` interface
+  2. Register plugins in `sheriff.config.ts` via the `plugins` array
+  3. Run plugins via `npx sheriff <plugin-name>`
+  4. Use the `SheriffPluginAPI` to access verify results, project data, config, and logging
+
+### Files Created
+- `packages/core/src/lib/cli/tests/plugin-e2e.spec.ts`
+
+### PRD Update
+- Marked `e2e-plugin-test` as passing
+- **All 13 PRD tasks are now complete!**
