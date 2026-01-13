@@ -253,3 +253,48 @@
 ### PRD Update
 - Marked `async-error-handler` as passing (was already implemented by previous developer)
 - Marked `plugin-command` as passing
+
+---
+
+## 2026-01-13: cli-main-integration
+
+### Completed
+- Integrated plugin system into the main CLI in `packages/core/src/lib/cli/main.ts`:
+  - Defined `BUILTIN_COMMANDS` set with `init`, `verify`, `list`, `export`, `version`
+  - Added `isBuiltinCommand(cmd)` helper function
+  - Created `showHelp(plugins)` function that displays help with registered plugins
+  - Created async `handlePluginOrHelp(cmd, args, plugins)` function for plugin/help routing
+  - Refactored `main()` to handle built-in commands synchronously and plugins asynchronously
+  - Built-in commands take precedence over plugins with the same name
+
+### Implementation Details
+- Main flow:
+  1. Check if command is a built-in command → execute synchronously via `handleError()`
+  2. Otherwise → load plugins via `getPlugins()`, handle asynchronously via `handleErrorAsync()`
+     - If command matches a plugin name → execute plugin via `executePlugin()`
+     - If no match → show help (with plugin list)
+- Help output now includes "Plugins:" section when plugins are registered
+- Plugins display with format: `sheriff <name>: <description>` (or just `sheriff <name>` if no description)
+
+### Test Coverage
+- Updated test suite in `packages/core/src/lib/cli/tests/main.spec.ts`
+- 14 tests covering all acceptance criteria:
+  - Help output (version, commands, unknown command shows help)
+  - Plugin listing in help (with descriptions, without descriptions, empty list)
+  - Plugin execution (correct plugin, passes args, provides API)
+  - Plugin error handling (displays error message)
+  - Built-in command precedence (verify works, list works, plugin named 'verify' not executed)
+
+### Notes for Next Developer
+- The plugin system is now fully integrated into the CLI
+- Remaining tasks (in order):
+  1. `public-exports` - Export plugin types from package index (so users can import types)
+  2. `e2e-plugin-test` - End-to-end test of plugin system
+- Build passes (`npm run build:all`), all 387 tests pass (14 tests in main.spec.ts, 13 new), lint passes
+
+### Files Modified
+- `packages/core/src/lib/cli/main.ts`
+- `packages/core/src/lib/cli/tests/main.spec.ts`
+
+### PRD Update
+- Marked `cli-main-integration` as passing

@@ -212,7 +212,7 @@
       "Process exits with 0 on plugin success",
       "Process exits with 1 on plugin failure"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": "public-exports",
