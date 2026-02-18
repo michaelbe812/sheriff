@@ -134,6 +134,9 @@ export function main(...argv: string[]) {
   }
 
   // Handle plugins and help asynchronously
-  const plugins = getPlugins();
-  handleErrorAsync(() => handlePluginOrHelp(cmd, args, plugins));
+  // Keep plugin loading inside async error handling to surface config/plugin errors.
+  handleErrorAsync(async () => {
+    const plugins = getPlugins();
+    await handlePluginOrHelp(cmd, args, plugins);
+  });
 }

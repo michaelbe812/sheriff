@@ -2,6 +2,7 @@ import getFs from '../../fs/getFs';
 import { parseConfig } from '../../config/parse-config';
 import { toFsPath } from '../../file-info/fs-path';
 import { SheriffPlugin } from '../../plugin/plugin';
+import { validatePlugin } from '../../plugin/plugin-resolver';
 
 /**
  * Loads plugins from the sheriff.config.ts file.
@@ -10,7 +11,6 @@ import { SheriffPlugin } from '../../plugin/plugin';
  * the plugins array. It handles all edge cases gracefully:
  * - Returns empty array if sheriff.config.ts doesn't exist
  * - Returns empty array if plugins property is undefined
- * - Returns empty array if config parsing fails
  *
  * @returns Array of SheriffPlugin instances from the configuration,
  *          or an empty array if no plugins are configured
@@ -32,13 +32,13 @@ export function getPlugins(): SheriffPlugin[] {
     return [];
   }
 
-  try {
-    const config = parseConfig(toFsPath(configPath));
-    // Return plugins array or empty array if undefined
-    return config.plugins ?? [];
-  } catch {
-    // Return empty array if config parsing fails
-    // This allows the CLI to continue and show help/error for unknown commands
-    return [];
+  const config = parseConfig(toFsPath(configPath));
+  const plugins = config.plugins ?? [];
+
+  // Validate all plugins early so CLI help/dispatch won't crash on malformed entries
+  for (const plugin of plugins) {
+    validatePlugin(plugin);
   }
+
+  return plugins;
 }

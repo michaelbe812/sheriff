@@ -264,6 +264,43 @@ describe('Plugin System E2E', () => {
       ).toBe(true);
     });
 
+    it('api.getProjectData() forwards includeExternalLibraries option', async () => {
+      let capturedData: ProjectData | undefined;
+
+      const testPlugin: SheriffPlugin = {
+        name: 'data-getter-with-externals',
+        async execute(_args: string[], api: SheriffPluginAPI): Promise<void> {
+          capturedData = api.getProjectData(undefined, {
+            includeExternalLibraries: true,
+          });
+        },
+      };
+
+      mockCli();
+      vi.spyOn(getPluginsModule, 'getPlugins').mockReturnValue([testPlugin]);
+
+      createProject({
+        'tsconfig.json': tsConfig(),
+        'sheriff.config.ts': sheriffConfig({
+          depRules: {},
+          entryFile: 'src/main.ts',
+        }),
+        src: {
+          'main.ts': ['./customers', 'typescript'],
+          customers: { 'index.ts': [] },
+        },
+      });
+
+      main('data-getter-with-externals');
+
+      await vi.waitFor(() => {
+        expect(capturedData).toBeDefined();
+      });
+
+      const firstEntry = capturedData![Object.keys(capturedData!)[0]];
+      expect(Array.isArray(firstEntry.externalLibraries)).toBe(true);
+    });
+
     it('api.getConfig() returns Configuration object', async () => {
       let capturedConfig: Configuration | undefined;
 
@@ -542,6 +579,72 @@ describe('Plugin System E2E', () => {
 
       expect(allLogs()).toContain('File with violation:');
       expect(allLogs()).toContain('dep rules');
+    });
+  });
+
+  describe('Real config loading', () => {
+    it('loads and executes plugin class from sheriff.config.ts', async () => {
+      const { allLogs } = mockCli();
+
+      createProject({
+        'tsconfig.json': tsConfig(),
+        'sheriff.config.ts': `
+          class RawConfigPlugin {
+            name = 'raw-config-plugin';
+
+            async execute(args: string[], api: SheriffPluginAPI): Promise<void> {
+              api.log('raw-plugin args: ' + args.join(','));
+            }
+          }
+
+          export const config = {
+            depRules: {},
+            entryFile: 'src/main.ts',
+            plugins: [new RawConfigPlugin()]
+          };
+        `,
+        src: {
+          'main.ts': [],
+        },
+      });
+
+      main('raw-config-plugin', '--format=xml', 'report.xml');
+
+      await vi.waitFor(() => {
+        expect(allLogs()).toContain('raw-plugin args: --format=xml,report.xml');
+      });
+    });
+
+    it('api.getConfig() works without entryFile/entryPoints in config', async () => {
+      const { allLogs } = mockCli();
+
+      createProject({
+        'tsconfig.json': tsConfig(),
+        'sheriff.config.ts': `
+          class ConfigOnlyPlugin {
+            name = 'config-only';
+
+            async execute(_args: string[], api: SheriffPluginAPI): Promise<void> {
+              const config = api.getConfig();
+              api.log('dep-rule-keys: ' + Object.keys(config.depRules).length);
+            }
+          }
+
+          export const config = {
+            depRules: {},
+            plugins: [new ConfigOnlyPlugin()]
+          };
+        `,
+        src: {
+          'main.ts': [],
+        },
+      });
+
+      main('config-only');
+
+      await vi.waitFor(() => {
+        expect(allLogs()).toContain('dep-rule-keys: 0');
+      });
     });
   });
 });

@@ -71,6 +71,48 @@ describe('main', () => {
       expect(allLogs()).toContain('Commands:');
       expect(allLogs()).toContain(`Sheriff (${version})`);
     });
+
+    it('should surface plugin loading errors instead of silently showing help', async () => {
+      const { allLogs, allErrorLogs } = mockCli();
+      createProject({
+        'tsconfig.json': tsConfig(),
+        'sheriff.config.ts': 'export const config = ;',
+        src: {
+          'main.ts': [],
+        },
+      });
+
+      main();
+
+      await vi.waitFor(() => {
+        expect(allErrorLogs()).not.toBe('');
+      });
+
+      expect(allLogs()).not.toContain('Commands:');
+    });
+
+    it('should show PluginInvalidError when configured plugin entries are malformed', async () => {
+      const { allErrorLogs } = mockCli();
+      createProject({
+        'tsconfig.json': tsConfig(),
+        'sheriff.config.ts': `
+          export const config = {
+            depRules: {},
+            entryFile: 'src/main.ts',
+            plugins: [null as any]
+          };
+        `,
+        src: {
+          'main.ts': [],
+        },
+      });
+
+      main();
+
+      await vi.waitFor(() => {
+        expect(allErrorLogs()).toContain('Invalid plugin configuration');
+      });
+    });
   });
 
   describe('plugin listing in help', () => {

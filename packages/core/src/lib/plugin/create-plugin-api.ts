@@ -5,6 +5,8 @@ import { traverseFileInfo } from '../modules/traverse-file-info';
 import { getEntriesFromCliOrConfig } from '../cli/internal/get-entries-from-cli-or-config';
 import { getProjectData as getProjectDataFn, ProjectData } from '../api/get-project-data';
 import getFs from '../fs/getFs';
+import { parseConfig } from '../config/parse-config';
+import { toFsPath } from '../file-info/fs-path';
 import {
   SheriffPluginAPI,
   VerificationResult,
@@ -110,10 +112,9 @@ function getProjectDataForPlugin(
  * @returns The parsed Configuration object from sheriff.config.ts
  */
 function getConfigForPlugin(): Configuration {
-  // Get entry points which also parses the config
-  const projectEntries = getEntriesFromCliOrConfig(undefined);
-  // The config is available from the first project entry's projectInfo
-  return projectEntries[0].projectInfo.config;
+  const fs = getFs();
+  const configPath = fs.join(fs.cwd(), 'sheriff.config.ts');
+  return parseConfig(toFsPath(configPath));
 }
 
 /**

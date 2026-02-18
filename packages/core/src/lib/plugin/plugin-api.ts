@@ -1,4 +1,7 @@
-import { ProjectData } from '../api/get-project-data';
+import {
+  ProjectData,
+  Options as GetProjectDataOptions,
+} from '../api/get-project-data';
 import { Configuration } from '../config/configuration';
 
 /**
@@ -42,12 +45,12 @@ export interface VerificationResult {
 }
 
 /**
- * Options for getProjectData.
+ * Supported options for `getProjectData`.
  */
-export interface ProjectDataOptions {
-  /** Skip import resolution */
-  skipImportResolution?: boolean;
-}
+export type ProjectDataOptions = Pick<
+  GetProjectDataOptions,
+  'includeExternalLibraries'
+>;
 
 /**
  * API provided to Sheriff plugins.

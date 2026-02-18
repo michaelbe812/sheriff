@@ -3,17 +3,7 @@ import { createProject } from '../../test/project-creator';
 import { tsConfig } from '../../test/fixtures/ts-config';
 import { sheriffConfig } from '../../test/project-configurator';
 import { getPlugins } from '../internal/get-plugins';
-import { SheriffPlugin } from '../../plugin/plugin';
-import { SheriffPluginAPI } from '../../plugin/plugin-api';
-
-// Mock plugin for testing
-const createMockPlugin = (name: string, description?: string): SheriffPlugin => ({
-  name,
-  description,
-  execute: async (_args: string[], _api: SheriffPluginAPI): Promise<void> => {
-    // No-op for testing
-  },
-});
+import { PluginInvalidError } from '../../error/user-error';
 
 describe('getPlugins', () => {
   it('should return empty array when sheriff.config.ts does not exist', () => {
@@ -47,16 +37,28 @@ describe('getPlugins', () => {
   });
 
   it('should return plugins array from config', () => {
-    const mockPlugin1 = createMockPlugin('reporter', 'Generate reports');
-    const mockPlugin2 = createMockPlugin('analyzer');
-
     createProject({
       'tsconfig.json': tsConfig(),
-      'sheriff.config.ts': sheriffConfig({
-        depRules: {},
-        entryFile: 'src/main.ts',
-        plugins: [mockPlugin1, mockPlugin2],
-      }),
+      'sheriff.config.ts': `
+        class ReporterPlugin {
+          name = 'reporter';
+          description = 'Generate reports';
+
+          async execute(): Promise<void> {}
+        }
+
+        class AnalyzerPlugin {
+          name = 'analyzer';
+
+          async execute(): Promise<void> {}
+        }
+
+        export const config = {
+          depRules: {},
+          entryFile: 'src/main.ts',
+          plugins: [new ReporterPlugin(), new AnalyzerPlugin()]
+        };
+      `,
       src: {
         'main.ts': [],
       },
@@ -89,16 +91,21 @@ describe('getPlugins', () => {
     expect(plugins).toEqual([]);
   });
 
-  it('should handle config with only plugins (no entryFile)', () => {
-    const mockPlugin = createMockPlugin('junit');
-
+  it('should handle config with plugins and without entryFile', () => {
     createProject({
       'tsconfig.json': tsConfig(),
-      'sheriff.config.ts': sheriffConfig({
-        depRules: {},
-        entryFile: 'src/main.ts',
-        plugins: [mockPlugin],
-      }),
+      'sheriff.config.ts': `
+        class JunitPlugin {
+          name = 'junit';
+
+          async execute(): Promise<void> {}
+        }
+
+        export const config = {
+          depRules: {},
+          plugins: [new JunitPlugin()]
+        };
+      `,
       src: {
         'main.ts': [],
       },
@@ -108,5 +115,35 @@ describe('getPlugins', () => {
 
     expect(plugins).toHaveLength(1);
     expect(plugins[0].name).toBe('junit');
+  });
+
+  it('should throw when sheriff.config.ts cannot be parsed', () => {
+    createProject({
+      'tsconfig.json': tsConfig(),
+      'sheriff.config.ts': 'export const config = ;',
+      src: {
+        'main.ts': [],
+      },
+    });
+
+    expect(() => getPlugins()).toThrow();
+  });
+
+  it('should throw PluginInvalidError for malformed plugin entries', () => {
+    createProject({
+      'tsconfig.json': tsConfig(),
+      'sheriff.config.ts': `
+        export const config = {
+          depRules: {},
+          entryFile: 'src/main.ts',
+          plugins: [null as any]
+        };
+      `,
+      src: {
+        'main.ts': [],
+      },
+    });
+
+    expect(() => getPlugins()).toThrow(PluginInvalidError);
   });
 });
