@@ -10,7 +10,11 @@ export type UserErrorCode =
   | 'SH-009'
   | 'SH-010'
   | 'SH-011'
-  | 'SH-012';
+  | 'SH-012'
+  | 'SH-013'
+  | 'SH-014'
+  | 'SH-015'
+  | 'SH-016';
 
 export class UserError extends Error {
   constructor(
@@ -120,5 +124,40 @@ export class CollidingEntrySettings extends UserError {
 export class NoEntryPointsFoundError extends UserError {
   constructor() {
     super('SH-012', 'No entryPoints defined in sheriff.config.ts.');
+  }
+}
+
+export class PluginNotFoundError extends UserError {
+  constructor(pluginName: string) {
+    super(
+      'SH-013',
+      `Plugin '${pluginName}' not found. Make sure to register it in sheriff.config.ts.`,
+    );
+  }
+}
+
+export class PluginInvalidError extends UserError {
+  constructor(details: string, index?: number) {
+    const pluginReference =
+      index === undefined ? 'plugin' : `plugin at index ${index}`;
+    super('SH-014', `Invalid ${pluginReference}: ${details}.`);
+  }
+}
+
+export class PluginExecutionError extends UserError {
+  constructor(pluginName: string, errorMessage: string) {
+    super(
+      'SH-015',
+      `Plugin '${pluginName}' failed during execution: ${errorMessage}`,
+    );
+  }
+}
+
+export class DuplicatePluginNameError extends UserError {
+  constructor(pluginName: string) {
+    super(
+      'SH-016',
+      `Plugin '${pluginName}' is registered more than once. Plugin names must be unique.`,
+    );
   }
 }
