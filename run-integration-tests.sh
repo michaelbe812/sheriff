@@ -1,5 +1,7 @@
 set -e
 
+export NODE_PATH="$(pwd)/node_modules"
+
 # We copy the test projects to a temporary directory to avoid any potential
 # issues with the dependencies from the root project.
 
@@ -26,6 +28,9 @@ cd ../angular-iv
 bash ./integration-test.sh
 
 cd ../typescript-i
+bash ./integration-test.sh
+
+cd ../plugin-i
 bash ./integration-test.sh
 
 cd ../..
