@@ -1,7 +1,11 @@
 # Sheriff
 
-![build status](https://github.com/softarc-consulting/sheriff/actions/workflows/build.yml/badge.svg)
-[![npm version](https://img.shields.io/npm/v/%40softarc%2Fsheriff-core.svg)](https://www.npmjs.com/package/%40softarc%2Fsheriff-core)
+![build status](https://github.com/michaelbe812/sheriff/actions/workflows/build.yml/badge.svg)
+[![npm version](https://img.shields.io/npm/v/%40lambda-solutions%2Fsheriff-core.svg)](https://www.npmjs.com/package/%40lambda-solutions%2Fsheriff-core)
+
+> This is a fork of [softarc-consulting/sheriff](https://github.com/softarc-consulting/sheriff),
+> published under the `@lambda-solutions` npm scope. All credit for the original work goes to the
+> [Softarc Consulting](https://github.com/softarc-consulting) team.
 
 Sheriff is a tool designed to enforce module boundaries and dependency rules in TypeScript projects, ensuring a clean and maintainable codebase.
 
@@ -15,12 +19,12 @@ Key features include:
 - Support for automatic and manual tagging of modules to apply dependency rules effectively.
 - A CLI for initializing configurations, verifying rules, listing modules, and exporting dependency graphs.
 
-For a more detailed guide on installation, setup, and usage, head to the **[Documentation](https://softarc-consulting.github.io/sheriff/)**.
+For a more detailed guide on installation, setup, and usage, head to the **[Documentation](https://michaelbe812.github.io/sheriff/)**.
 
 To install Sheriff with the ESLint plugin, run
 
 ```shell
-npm i -D @softarc/sheriff-core @softarc/eslint-plugin-sheriff
+npm i -D @lambda-solutions/sheriff-core @lambda-solutions/eslint-plugin-sheriff
 npx sheriff init
 ```
 
